@@ -6,7 +6,7 @@ import {useAuth} from '../contexts/AuthContext'
 import {collection, addDoc} from "firebase/firestore"
 import {db} from '../authentication/Firebase'
 
-export default function AddFolder() {
+export default function AddFolder({currentFolder}) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const {currentUser} = useAuth()
@@ -14,11 +14,16 @@ export default function AddFolder() {
   async function handleFormSubmit(e){
     e.preventDefault()
 
+    if(currentFolder == null){
+      return
+    }
+
     try{
       await addDoc(collection(db, "folders"), {
         name: name,
         userId: currentUser.uid,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        parentId: currentFolder.folder.id
       })
     }
     catch(ex){
