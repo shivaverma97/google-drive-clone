@@ -41,7 +41,7 @@ export function useFolder(folderId = null, folder = null) {
         childFolder: [],
         childFiles: []
     })
-
+    
     useEffect(() => {
         dispatch({ type: ACTIONS.SELECT_FOLDER, payload: { folderId, folder } })
     }, [folder, folderId])
@@ -51,19 +51,14 @@ export function useFolder(folderId = null, folder = null) {
             return dispatch({ type: ACTIONS.UPDATE_FOLDER, payload: { folder: ROOT_FOLDER } })
         }
 
-        // getDocs(collection(db, "folders").doc(folderId))
-        //     .then((querySnapshot) => {
-        //         const newData = querySnapshot.docs
-        //             .map((doc) => ({ ...doc.data(), id: doc.id }));
-        //         console.log(newData);
-        //     })
-
         getDoc(doc(db, "folders", folderId))
-            .then((docSnapshot) => {
-                if (docSnapshot.exists()) {
-                    const data = docSnapshot.data();
-                    console.log(data);
-                    // Do something with the data...
+            .then((doc) => {
+                if (doc.exists()) {
+                    const formattedDoc = {
+                        id: doc.id,
+                        ...doc.data()
+                    }
+                    dispatch({ type: ACTIONS.UPDATE_FOLDER, payload: { folder: formattedDoc } })
                 } else {
                     console.log("No such document!");
                 }
