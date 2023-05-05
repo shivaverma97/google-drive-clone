@@ -24,6 +24,9 @@ function App() {
             <Route path="/updateprofile" Component={PrivateRoutes}>
               <Route path="/updateprofile" Component={UpdateProfile} />
             </Route>
+            <Route path="/folder/:folderId" Component={PrivateRoutes}>
+              <Route path="/folder/:folderId" Component={Dashboard} />
+            </Route>
             <Route path="/resetpassword" Component={ResetPassword} />
           </Routes>
         </AuthProvider>

@@ -1,10 +1,12 @@
 import { useEffect, useReducer } from 'react'
 import { db } from '../authentication/Firebase'
-import { getDoc, doc } from "firebase/firestore"
+import { getDoc, doc, collection, query, where, orderBy, onSnapshot } from "firebase/firestore"
+import { useAuth } from '../contexts/AuthContext'
 
 const ACTIONS = {
     SELECT_FOLDER: "select-folder",
-    UPDATE_FOLDER: "update-folder"
+    UPDATE_FOLDER: "update-folder",
+    SET_CHILD_FOLDERS: "set-child-folders"
 }
 
 export const ROOT_FOLDER = {
@@ -29,16 +31,23 @@ function reducer(state, { type, payload }) {
                 folder: payload.folder
             }
 
+        case ACTIONS.SET_CHILD_FOLDERS:
+            return{
+                ...state,
+                childFolders: payload.childFolders
+            }
         default:
             return state
     }
 }
 
 export function useFolder(folderId = null, folder = null) {
+    const {currentUser} = useAuth()
+ 
     const [state, dispatch] = useReducer(reducer, {
         folderId,
         folder,
-        childFolder: [],
+        childFolders: [],
         childFiles: []
     })
     
@@ -67,6 +76,23 @@ export function useFolder(folderId = null, folder = null) {
                 console.log("Error getting document:", error);
             });
     }, [folderId])
+
+    useEffect(() => {
+        const queryConstraints = []
+        queryConstraints.push(where('parentId', '==', folderId))
+        queryConstraints.push(where('userId', '==', currentUser.uid))
+        queryConstraints.push(orderBy('createdAt'))
+        const q = query(collection(db, 'folders'), ...queryConstraints)
+    
+        return onSnapshot(q, (querySnapshot) => {
+            dispatch({
+                type: ACTIONS.SET_CHILD_FOLDERS,
+                payload: { childFolders: querySnapshot.docs.map(doc => {
+                    return { id: doc.id, ...doc.data()}
+                })}
+            })
+        })
+    }, [folderId, currentUser])
 
     return state
 }

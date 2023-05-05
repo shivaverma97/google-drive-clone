@@ -23,7 +23,7 @@ export default function AddFolder({currentFolder}) {
         name: name,
         userId: currentUser.uid,
         createdAt: Date.now(),
-        parentId: currentFolder.folder.id
+        parentId: currentFolder.id
       })
     }
     catch(ex){
