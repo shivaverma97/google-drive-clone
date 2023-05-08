@@ -43,7 +43,6 @@ function reducer(state, { type, payload }) {
 
 export function useFolder(folderId = null, folder = null) {
     const {currentUser} = useAuth()
- 
     const [state, dispatch] = useReducer(reducer, {
         folderId,
         folder,
