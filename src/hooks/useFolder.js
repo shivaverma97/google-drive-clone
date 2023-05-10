@@ -6,7 +6,8 @@ import { useAuth } from '../contexts/AuthContext'
 const ACTIONS = {
     SELECT_FOLDER: "select-folder",
     UPDATE_FOLDER: "update-folder",
-    SET_CHILD_FOLDERS: "set-child-folders"
+    SET_CHILD_FOLDERS: "set-child-folders",
+    SET_CHILD_FILES: "set-child-files"
 }
 
 export const ROOT_FOLDER = {
@@ -35,6 +36,12 @@ function reducer(state, { type, payload }) {
             return{
                 ...state,
                 childFolders: payload.childFolders
+            }
+        
+        case ACTIONS.SET_CHILD_FILES:
+            return{
+                ...state,
+                childFiles: payload.childFiles
             }
         default:
             return state
@@ -87,6 +94,23 @@ export function useFolder(folderId = null, folder = null) {
             dispatch({
                 type: ACTIONS.SET_CHILD_FOLDERS,
                 payload: { childFolders: querySnapshot.docs.map(doc => {
+                    return { id: doc.id, ...doc.data()}
+                })}
+            })
+        })
+    }, [folderId, currentUser])
+
+    useEffect(() => {
+        const queryConstraints = []
+        queryConstraints.push(where('folderId', '==', folderId))
+        queryConstraints.push(where('userId', '==', currentUser.uid))
+        //queryConstraints.push(orderBy('createdAt'))
+        const q = query(collection(db, 'files'), ...queryConstraints)
+    
+        return onSnapshot(q, (querySnapshot) => {
+            dispatch({
+                type: ACTIONS.SET_CHILD_FILES,
+                payload: { childFiles: querySnapshot.docs.map(doc => {
                     return { id: doc.id, ...doc.data()}
                 })}
             })

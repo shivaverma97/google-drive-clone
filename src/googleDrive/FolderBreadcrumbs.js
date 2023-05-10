@@ -12,7 +12,7 @@ export default function FolderBreadcrumbs({ currentFolder }) {
             className='flex-grow-1'
             listProps={{ className: 'bg-white pl-0 m-0' }}
         >
-            {path.map((folder, index) => (
+            {path.map((folder) => (
                 <Breadcrumb.Item
                     key={folder.id}
                     linkAs={Link}
