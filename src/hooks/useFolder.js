@@ -104,7 +104,7 @@ export function useFolder(folderId = null, folder = null) {
         const queryConstraints = []
         queryConstraints.push(where('folderId', '==', folderId))
         queryConstraints.push(where('userId', '==', currentUser.uid))
-        //queryConstraints.push(orderBy('createdAt'))
+        queryConstraints.push(orderBy('createdAt'))
         const q = query(collection(db, 'files'), ...queryConstraints)
     
         return onSnapshot(q, (querySnapshot) => {

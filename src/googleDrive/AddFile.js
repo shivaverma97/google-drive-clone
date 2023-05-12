@@ -9,6 +9,7 @@ import { addDoc, collection } from 'firebase/firestore'
 import { db } from '../authentication/Firebase'
 import { v4 as uuid } from 'uuid'
 import { ProgressBar, Toast } from 'react-bootstrap'
+import { createPortal } from 'react-dom'
 
 export default function AddFile({ currentFolder }) {
     const { currentUser } = useAuth()
@@ -91,7 +92,7 @@ export default function AddFile({ currentFolder }) {
             </label>
             {
                 uploadingFiles.length > 0 &&
-                (
+                createPortal(
                     <div
                         style={{
                             position: 'absolute',
